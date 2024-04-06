@@ -73,6 +73,50 @@ def process_image_in_memory(image_bytes):
         processed_image_bytes = output.getvalue()
     return processed_image_bytes
 
+
+@app.post("/process-image-sync/")
+def process_image(image: UploadFile = File(...)):
+    # Read the uploaded image as bytes
+    image_bytes = image.file.read()
+
+    # Run inference on the image
+    output_mask = sample_pred_sync(image_bytes)
+
+    # Convert the output mask to a BMP image
+    output_image = Image.fromarray(output_mask.astype('uint8') * 255, mode='L')
+    with io.BytesIO() as output:
+        output_image.save(output, format="BMP")
+        processed_image_bytes = output.getvalue()
+
+    # Return the processed image as a stream
+    return StreamingResponse(io.BytesIO(processed_image_bytes), media_type="image/bmp")
+
+def sample_pred_sync(image_bytes):
+    print("Received request")
+    # Load the BMP image
+    image = np.array(Image.open(io.BytesIO(image_bytes)))
+    print("Opened image")
+
+    # Apply transformations
+    image_new = transform(image)
+    image_new = image_new.unsqueeze(0)
+    print("Transformed and unsqueezed image")
+
+    # Perform inference
+    pred = model(image_new)
+    print("Inference done")
+
+    # Get the output mask
+    output_mask = torch.max(pred, dim=1)[1].cpu().squeeze(0).numpy()
+
+    # Save the output mask as BMP (Optional)
+    # plt.imsave("output.bmp", output_mask)
+    # print("Saved image")
+
+    return output_mask
+
+
+
 if __name__=="__main__":
     uvicorn.run(app,host="0.0.0.0", port=8000)
 
