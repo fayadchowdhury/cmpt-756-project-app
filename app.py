@@ -5,7 +5,6 @@ import numpy as np
 import io
 from PIL import Image
 from mangum import Mangum
-import matplotlib.pyplot as plt
 
 from model.model import UNet, transform
 
@@ -43,7 +42,7 @@ async def sample_pred(image_bytes):
     print("Image processed")
     return processed_image_bytes
 
-@app.post("/process-image/")
+@app.post("/process-image")
 async def process_image(image: UploadFile = File(...)):
     # Read the uploaded image as bytes
     image_bytes = await image.read()
