@@ -29,6 +29,7 @@ async def sample_pred(image_bytes):
     image_new = transform(image)  # Assuming transform is defined somewhere
     image_new = image_new.unsqueeze(0)
     print("Transformed and unsqueezed image")
+    print("Beginning inference")
     pred = model(image_new)  # Assuming model is defined globally
     print("Inference done")
     output_mask = torch.max(pred, dim=1)[1].cpu().squeeze(0).numpy()
