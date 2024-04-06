@@ -1,0 +1,9 @@
+fastapi==0.68.0
+uvicorn==0.15.0
+numpy==1.22.2
+pandas==1.4.0
+pillow==9.0.0
+mangum==0.11.0
+matplotlib==3.5.1
+torch==1.10.2
+torchvision==0.11.3
