@@ -6,6 +6,9 @@ import io
 from PIL import Image
 from mangum import Mangum
 
+from datetime import datetime
+import json
+
 from model import model
 
 app=FastAPI()
@@ -16,7 +19,8 @@ def health_check():
     return JSONResponse({"health":"Okay"})
 
 @app.post("/predict-user")
-async def pred(file: UploadFile = File(...)):
+async def pred(id: str, file: UploadFile = File(...)):
+    req_time_server = datetime.now()
     if file.content_type != "image/png":
         return {"error": "Only PNG images are supported"}
 
@@ -28,7 +32,16 @@ async def pred(file: UploadFile = File(...)):
     
     pred = model.predict(img)
     
-    return JSONResponse({"prediction": pred})
+    res_time_server = datetime.now()
+    
+    return JSONResponse(
+        {
+            "req_id": id,
+            "req_time": req_time_server.strftime("%Y-%m-%d %H:%M:%S"),
+            "prediction": pred,
+            "res_time": res_time_server.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+    )
 
 if __name__=="__main__":
     uvicorn.run(app,host="0.0.0.0", port=8000)
