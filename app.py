@@ -37,9 +37,9 @@ async def pred(id: str, file: UploadFile = File(...)):
     return JSONResponse(
         {
             "req_id": id,
-            "req_time": req_time_server.strftime("%Y-%m-%d %H:%M:%S"),
+            "req_time": req_time_server.strftime("%Y-%m-%d %H:%M:%S.%f"),
             "prediction": pred,
-            "res_time": res_time_server.strftime("%Y-%m-%d %H:%M:%S"),
+            "res_time": res_time_server.strftime("%Y-%m-%d %H:%M:%S.%f"),
         }
     )
 
